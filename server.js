@@ -41,7 +41,7 @@ app.use('/api', routes);
 const server = createApolloServer(schema, resolvers, models);
 server.applyMiddleware({ app, path: '/graphql' });
 
-// Create http server and add subscriptions to it
+// Create http server and add subscriptions
 const httpServer = createServer(app);
 server.installSubscriptionHandlers(httpServer);
 
