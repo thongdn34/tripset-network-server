@@ -24,25 +24,14 @@ mongoose
 
 // Initializes application
 const app = express();
-const allowedOrigins = [process.env.FRONTEND_URL, 'http://localhost:3000']
+
 // Enable cors
 const corsOptions = {
-  origin: function(origin, callback){
-    // allow requests with no origin 
-    // (like mobile apps or curl requests)
-    if(!origin) return callback(null, true);
-    if(allowedOrigins.indexOf(origin) === -1){
-      var msg = 'The CORS policy for this site does not ' +
-                'allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
+  origin: process.env.FRONTEND_URL,
   credentials: true
 };
 
-app.use(cors());
-app.options('*', cors());
+app.use(cors(corsOptions));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
