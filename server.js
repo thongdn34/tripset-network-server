@@ -27,13 +27,15 @@ const app = express();
 
 // Enable cors
 const corsOptions = {
+  origin: process.env.FRONTEND_URL,
+  credentials: true,
   "origin": "*",
   "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
   "preflightContinue": false,
   "optionsSuccessStatus": 204
 };
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
