@@ -7,3 +7,8 @@
     ***GET /api/posts?limit=15***
   + Offset or skip number of post, default is 0:
     ***GET /api/posts?offset=0***
+  + Get all users
+    **GET /api/users**
+  + Get info user
+    **GET /api/users?userId=5dadf04fa8ef290bb9fd63e4**
+    

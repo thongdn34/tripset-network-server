@@ -16,6 +16,19 @@ router.get('/posts', async (req, res, next) => {
   next();
 });
 
+router.get('/users', async (req, res, next) => {
+  const { userId, skip, limit } = req.query;
+  let query = userId ? { _id: userId } : { };
+  const userCount = await User.find(query).countDocuments();
+  const allUser = await User.find(query)
+    .skip(skip || 0)
+    .limit(limit || 10)
+    .sort({ createdAt: 'desc' });
+
+  res.send({ count: userCount, data: allUser });
+  next();
+})
+
 //CHange status of user is active or disable
 router.post('/update-status-acount', (req, res, next) => {
   const { userId, status } = req.body;
