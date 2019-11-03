@@ -5,7 +5,7 @@ const { Post, User } = models
 
 router.get('/posts', async (req, res, next) => {
   const { userId, skip, limit } = req.query;
-  let query = { author: userId }
+  let query = userId ? { author: userId } : { }
   const postsCount = await Post.find(query).countDocuments();
   const allPosts = await Post.find(query)
     .skip(skip || 0)
