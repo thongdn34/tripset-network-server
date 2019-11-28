@@ -6,11 +6,10 @@ const { MAIL_SERVICE, MAIL_USER, MAIL_PASS } = process.env;
  * Creates transporter object that will help us to send emails
  */
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
+  service: MAIL_SERVICE,
   auth: {
-    user: 'nhatthong34@gmail.com',
-    pass: '22081997Asus',
+    user: MAIL_USER,
+    pass: MAIL_PASS,
   },
 });
 

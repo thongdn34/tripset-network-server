@@ -2,6 +2,8 @@ import jwt from 'jsonwebtoken';
 import { ApolloServer } from 'apollo-server-express';
 import { PubSub } from 'apollo-server';
 
+import { IS_USER_ONLINE } from '../constants/Subscriptions';
+
 // Export pubSub instance for publishing events
 export const pubSub = new PubSub();
 
@@ -33,24 +35,70 @@ export const createApolloServer = (schema, resolvers, models) => {
   return new ApolloServer({
     typeDefs: schema,
     resolvers,
-    context: async ({ req }) => {
-      let authUser;
-
-      if (req.headers.authorization !== 'null') {
-        const user = await checkAuthorization(req.headers['authorization']);
-        if (user) {
-          authUser = user;
+    context: async ({ req, connection }) => {
+      try {
+        if (connection) {
+          return connection.context;
         }
+  
+        let authUser;
+        if (req.headers.authorization !== 'null') {
+          const user = await checkAuthorization(req.headers['authorization']);
+  
+          if (user) {
+            authUser = user;
+          }
+        }
+  
+        return Object.assign({ authUser }, models);
+      } catch (error) {
+        console.log(error)
       }
-
-      return Object.assign({ authUser }, models);
     },
     subscriptions: {
       onConnect: async (connectionParams, webSocket) => {
-        console.log('*** User has connected to WebSocket server ***');
+        try {
+          if (connectionParams.authorization) {
+            const user = await checkAuthorization(connectionParams.authorization);
+  
+            // Publish user isOnline true
+            pubSub.publish(IS_USER_ONLINE, {
+              isUserOnline: {
+                userId: user.id,
+                isOnline: true,
+              },
+            });
+  
+            // Add authUser to socket's context, so we have access to it, in onDisconnect method
+            return {
+              authUser: user,
+            };
+          }
+        } catch (error) {
+          console.log(error)
+        }
+        // Check if user is authenticated
       },
-      onDisconnect: (webSocket, context) => {
-        console.log('*** User has been disconnected from WebSocket server ***');
+      onDisconnect: async (webSocket, context) => {
+        // Get socket's context
+        const c = await context.initPromise;
+        if (c && c.authUser) {
+          // Publish user isOnline false
+          pubSub.publish(IS_USER_ONLINE, {
+            isUserOnline: {
+              userId: c.authUser.id,
+              isOnline: false,
+            },
+          });
+
+          // Update user isOnline to false in DB
+          await models.User.findOneAndUpdate(
+            { email: c.authUser.email },
+            {
+              isOnline: false,
+            }
+          );
+        }
       },
     },
   });
