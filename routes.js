@@ -4,12 +4,12 @@ const router = express.Router();
 const { Post, User } = models
 
 router.get('/posts', async (req, res, next) => {
-  const { userId, skip, limit } = req.query;
+  const { userId, offset, limit } = req.query;
   let query = userId ? { author: userId } : { }
   const postsCount = await Post.find(query).countDocuments();
   const allPosts = await Post.find(query)
-    .skip(skip || 0)
-    .limit(limit || 10)
+    .skip((+offset) * 10 || 0)
+    .limit((+limit) || 10)
     .sort({ createdAt: 'desc' });
 
   res.send({ count: postsCount, data: allPosts });
@@ -17,12 +17,12 @@ router.get('/posts', async (req, res, next) => {
 });
 
 router.get('/users', async (req, res, next) => {
-  const { userId, skip, limit } = req.query;
+  const { userId, offset, limit } = req.query;
   let query = userId ? { _id: userId } : { };
   const userCount = await User.find(query).countDocuments();
   const allUser = await User.find(query)
-    .skip(skip || 0)
-    .limit(limit || 10)
+    .skip((+offset - 1) * 10 || 0)
+    .limit(+limit || 10)
     .sort({ createdAt: 'desc' });
 
   res.send({ count: userCount, data: allUser });
