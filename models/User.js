@@ -72,6 +72,10 @@ const userSchema = new Schema(
         ref: 'Notification',
       },
     ],
+    isActive: {
+      type: Boolean,
+      default: true
+    }
   },
   {
     timestamps: true,
