@@ -544,6 +544,34 @@ const Mutation = {
       'Something went wrong while uploading image to Cloudinary.'
     );
   },
+
+  /**
+   * Uploads info user
+   *
+   * @param {string} username
+   * @param {string} email
+   * @param {string} fullName
+   * @param {string} password
+   */
+
+  uploadInfo: async (
+     root,
+     { input: { id, username, email, fullName, password } },
+     { User }
+   ) => {
+     const user = await User.findById(id)
+     username && (user.username = username)
+     email && (user.email = email)
+     fullName && (user.fullName = fullName)
+     if (password) {
+      if (password.length < 6) {
+        throw new Error('Password min 6 characters.');
+      }
+      user.password = password
+     }
+     await user.save()
+     return user
+   }
 };
 
 const Subscription = {
