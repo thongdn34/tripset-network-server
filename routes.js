@@ -1,7 +1,36 @@
 import models from "./models";
+import bcrypt from 'bcryptjs'
 const express = require("express");
 const router = express.Router();
-const { Post, User } = models;
+const { Post, Admin, User } = models;
+
+router.post("/signup", async (req, res, next) => {
+  const { username, password } = req.body
+  const admin = new Admin({
+    username,
+    password
+  })
+  admin.save((err, result) => {
+    if (err) return res.status(400).send({ err })
+    return res.send(result)
+  })
+})
+
+router.post("/login", async (req, res, next) => {
+  const { username, password } = req.body
+  const user = await Admin.findOne({ username })
+
+  if (!user) {
+    return { isAuth: false, message: "User not found" }
+  }
+
+  const isValidPassword = await bcrypt.compare(password, user.password);
+  if (!isValidPassword) {
+    return res.send({ isAuth: false, message: "Invalid password" })
+  }
+
+  return res.send({ isAuth: true, message: "Success" })
+})
 
 router.get("/posts", async (req, res, next) => {
   const { userId, offset, limit } = req.query;
