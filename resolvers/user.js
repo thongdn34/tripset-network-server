@@ -447,17 +447,27 @@ const Mutation = {
     // Email user reset link
     const resetLink = `${process.env.FRONTEND_URL}/reset-password?email=${email}&token=${token}`;
     const mailOptions = {
+      from: 'VIVU',
       to: email,
       subject: 'Password Reset',
       html: resetLink,
     };
 
-    await sendEmail(mailOptions);
-
-    // Return success message
     return {
-      message: `A link to reset your password has been sent to ${email}`,
+      message: `${resetLink}`,
     };
+
+    // sendEmail(mailOptions).then(res => {
+    //   console.log(res) 
+    //   return {
+    //     message: `A link to reset your password has been sent to ${email}`,
+    //   };
+    // }).catch(error => {
+    //   return {
+    //     message: `Has error`,
+    //   };
+    //   console.log(error)
+    // })
   },
   /**
    * Resets user password
