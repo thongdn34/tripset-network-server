@@ -40,6 +40,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
     posts: [
       {
         type: Schema.Types.ObjectId,

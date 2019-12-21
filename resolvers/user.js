@@ -556,13 +556,14 @@ const Mutation = {
 
   uploadInfo: async (
      root,
-     { input: { id, username, email, fullName, password } },
+     { input: { id, username, email, fullName, password, isActive } },
      { User }
    ) => {
      const user = await User.findById(id)
      username && (user.username = username)
      email && (user.email = email)
      fullName && (user.fullName = fullName)
+     user.isActive = !isActive
      if (password) {
       if (password.length < 6) {
         throw new Error('Password min 6 characters.');

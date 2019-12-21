@@ -82,6 +82,7 @@ const UserSchema = gql`
     email: String
     fullName: String
     password: String
+    isActive: Boolean
   }
 
   # ---------------------------------------------------------
@@ -98,6 +99,7 @@ const UserSchema = gql`
     coverImage: String
     coverImagePublicId: String
     isOnline: Boolean
+    isActive: Boolean
     posts: [PostPayload]
     likes: [Like]
     followers: [Follow]
